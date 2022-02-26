@@ -915,6 +915,37 @@ valloc (size_t size)
 	return memalign(bytesPerPage, size);
 }
 
+extern C_LINKAGE size_t
+malloc_usable_size(void * ptr)
+{
+	size_t size = 0;
+
+	if ( allocationList == 0 )
+		EF_Abort("malloc_usable_size() called before first malloc().");
+
+        lock();
+
+	if ( ptr ) {
+		Slot *	slot;
+
+		Page_AllowAccess(allocationList, allocationListSize);
+		noAllocationListProtection = 1;
+		
+		slot = slotForUserAddress(ptr);
+
+		if ( slot == 0 )
+			EF_Abort("malloc_usable_size(%a): address not from malloc().", ptr);
+
+		size = slot->userSize;
+
+		noAllocationListProtection = 0;
+		Page_DenyAccess(allocationList, allocationListSize);
+	}
+
+	release();
+
+	return size;
+}
 
 #ifdef __hpux
 /*
