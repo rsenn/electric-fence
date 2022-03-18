@@ -820,7 +820,7 @@ __malloc_usable_size(void * oldBuffer)
 
 		Page_AllowAccess(allocationList, allocationListSize);
 		noAllocationListProtection = 1;
-		
+
 		slot = slotForUserAddress(oldBuffer);
 
 		if ( slot == 0 )
