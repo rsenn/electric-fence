@@ -48,7 +48,7 @@
 #undef	calloc
 #endif
 
-static const char	version[] = "\n  Electric Fence 2.2"
+static const char	version[] = "\n  Electric Fence 2.2.5"
  " Copyright (C) 1987-1999 Bruce Perens <bruce@perens.com>\n";
 
 /*
