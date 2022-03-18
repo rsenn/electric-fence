@@ -808,6 +808,42 @@ realloc(void * oldBuffer, size_t newSize)
 	return newBuffer;
 }
 
+extern C_LINKAGE size_t
+__malloc_usable_size(void * oldBuffer)
+{
+	size_t	size;
+
+	lock();
+
+	if ( oldBuffer ) {
+		Slot *	slot;
+
+		Page_AllowAccess(allocationList, allocationListSize);
+		noAllocationListProtection = 1;
+		
+		slot = slotForUserAddress(oldBuffer);
+
+		if ( slot == 0 )
+			EF_Abort(
+				"musable(%a): address not from malloc()."
+				,oldBuffer);
+
+		size = slot->userSize;
+
+		noAllocationListProtection = 0;
+		Page_DenyAccess(allocationList, allocationListSize);
+	}
+
+	unlock();
+
+	return size;
+}
+
+C_LINKAGE
+size_t malloc_usable_size(void*) __attribute__((alias("__malloc_usable_size")));
+C_LINKAGE
+size_t musable(void*) __attribute__((alias("malloc_usable_size")));
+
 extern C_LINKAGE void *
 malloc(size_t size)
 {

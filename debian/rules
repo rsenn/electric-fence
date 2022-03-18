@@ -19,10 +19,10 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 	#if [ -x configure ]; then ./configure --prefix=/usr; fi
-	make CFLAGS="-O2 -g -Wall -fPIC"
+	make CFLAGS="-g -Wall -fPIC"
 	gcc -g -shared -Wl,-soname,libefence.so.0 -o libefence.so.0.0 efence.o page.o print.o -lc -lpthread
 	rm *.o
-	make CFLAGS="-O2 -g -Wall"
+	make CFLAGS="-g -Wall"
 	touch build-stamp
 
 clean:

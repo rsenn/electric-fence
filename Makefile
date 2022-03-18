@@ -1,10 +1,10 @@
 ASFLAGS= -mips2
-CC= cc
+CC= gcc
 AR= ar
 INSTALL= install
 MV= mv
 CHMOD= chmod
-CFLAGS= -g
+CFLAGS= -g -fPIC
 LIB_INSTALL_DIR= /usr/lib
 MAN_INSTALL_DIR= /usr/man/man3
 
