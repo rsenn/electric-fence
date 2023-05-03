@@ -236,7 +236,6 @@ release()
 	  EF_InternalError("Failed to post the semaphore.");
 #endif /* USE_SEMAPHORE */
 }
-
 /*
  * initialize sets up the memory allocation arena and the run-time
  * configuration information.
@@ -869,22 +868,59 @@ realloc(void * oldBuffer, size_t newSize)
 		if ( newSize < (size = slot->userSize) )
 			size = newSize;
 
-		if ( size > 0 )
+		if ( size > 0 && newBuffer )
 			memcpy(newBuffer, oldBuffer, size);
 
 		free_locked(oldBuffer);
 		noAllocationListProtection = 0;
 		Page_DenyAccess(allocationList, allocationListSize);
 
-		if ( size < newSize )
+		if ( size < newSize && newBuffer )
 			memset(&(((char *)newBuffer)[size]), 0, newSize - size);
 		
 		/* Internal memory was re-protected in free() */
 	}
+
 	release();
 
 	return newBuffer;
 }
+
+extern C_LINKAGE size_t
+__malloc_usable_size(void * oldBuffer)
+{
+	size_t	size;
+
+	lock();
+
+	if ( oldBuffer ) {
+		Slot *	slot;
+
+		Page_AllowAccess(allocationList, allocationListSize);
+		noAllocationListProtection = 1;
+
+		slot = slotForUserAddress(oldBuffer);
+
+		if ( slot == 0 )
+			EF_Abort(
+				"musable(%a): address not from malloc()."
+				,oldBuffer);
+
+		size = slot->userSize;
+
+		noAllocationListProtection = 0;
+		Page_DenyAccess(allocationList, allocationListSize);
+	}
+
+	release();
+
+	return size;
+}
+
+C_LINKAGE
+size_t malloc_usable_size(void*) __attribute__((alias("__malloc_usable_size")));
+C_LINKAGE
+size_t musable(void*) __attribute__((alias("malloc_usable_size")));
 
 extern C_LINKAGE void *
 malloc(size_t size)
