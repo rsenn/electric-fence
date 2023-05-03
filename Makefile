@@ -9,10 +9,10 @@ LIBS= -lpthread
 prefix=/usr
 BIN_INSTALL_DIR= $(prefix)/bin
 LIB_INSTALL_DIR= $(prefix)/lib
-MAN_INSTALL_DIR= $(prefix)/man/man3
+MAN_INSTALL_DIR= $(prefix)/share/man/man3
 
 
-CC= cc
+CC= gcc
 AR= ar
 INSTALL= install
 
@@ -32,14 +32,15 @@ all:	libefence.a libefence.so.0.0 tstheap eftest
 	@ echo
 
 install: libefence.a libefence.3 libefence.so.0.0
-	$(INSTALL) -m 755 ef.sh $(BIN_INSTALL_DIR)/ef
+	#$(INSTALL) -m 755 ef.sh $(BIN_INSTALL_DIR)/ef
 	$(INSTALL) -m 644 libefence.a $(LIB_INSTALL_DIR)
 	$(INSTALL) -m 755 libefence.so.0.0 $(LIB_INSTALL_DIR)
 	- rm -f $(LIB_INSTALL_DIR)/libefence.so.0
 	ln -s libefence.so.0.0 $(LIB_INSTALL_DIR)/libefence.so.0
 	- rm -f $(LIB_INSTALL_DIR)/libefence.so
 	ln -s libefence.so.0.0 $(LIB_INSTALL_DIR)/libefence.so
-	$(INSTALL) -m 644 efence.3 $(MAN_INSTALL_DIR)/libefence.3
+	$(INSTALL) -d $(MAN_INSTALL_DIR)
+	$(INSTALL) -m 644 libefence.3 $(MAN_INSTALL_DIR)
 
 clean:
 	- rm -f $(OBJECTS) tstheap.o eftest.o tstheap eftest \
