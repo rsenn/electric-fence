@@ -848,7 +848,10 @@ realloc(void * oldBuffer, size_t newSize)
 
         lock();
 
-	newBuffer = memalign_locked(EF_ALIGNMENT, newSize);
+	if(newSize == 0) 
+		newBuffer = 0;
+	else 
+		newBuffer = memalign_locked(EF_ALIGNMENT, newSize);
 
 	if ( oldBuffer ) {
 		size_t	size;
